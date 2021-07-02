@@ -79,12 +79,18 @@ class App {
   #mapZoomLevel = 20;
   #eventMap;
   #workout = [];
+  #marker = [];
   constructor() {
     this._getPosition();
     this._getLocalStorage();
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleEelevationField);
-    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+    containerWorkouts.addEventListener('click', e => this._moveToPopup(e));
+    containerWorkouts.addEventListener('dblclick', e => {
+      const workoutEl = e.target.closest('.workout');
+      if (!workoutEl) return;
+      this._removeWorkout(workoutEl.dataset.id);
+    });
   }
   _getPosition() {
     if (navigator.geolocation)
@@ -179,7 +185,9 @@ class App {
     // this._getLocalStorage();
   }
   _renderWorkoutMaker(workout) {
-    L.marker(workout.coords)
+    const marker = L.marker(workout.coords);
+    this.#marker.push(marker);
+    marker
       .addTo(this.#map)
       .bindPopup(
         L.popup({
@@ -197,7 +205,9 @@ class App {
   }
   _rendreWorkout(workout) {
     let html = `
-    <li class="workout workout--${workout.type}" data-id="${workout.id}">
+    <li class="workout workout--${workout.type}" data-id="${workout.id}" id="${
+      workout.id
+    }">
           <h2 class="workout__title">${workout.description}</h2>
           <div class="workout__details">
             <span class="workout__icon">${
@@ -241,7 +251,7 @@ class App {
 
     form.insertAdjacentHTML('afterend', html);
   }
-  _moveToPopup(e) {
+  _moveToPopup = e => {
     const workoutEl = e.target.closest('.workout');
 
     if (!workoutEl) return;
@@ -256,7 +266,7 @@ class App {
     });
 
     // workout.click();
-  }
+  };
   _setLocalStorage() {
     localStorage.setItem('workouts', JSON.stringify(this.#workout));
   }
@@ -269,22 +279,18 @@ class App {
       this._rendreWorkout(work);
     });
   }
-  _removeWorkout(workout) {
-    // this.#workout.indexOf(id)
-    console.log(this.#workout);
-    const index = this.#workout.indexOf(workout);
-    console.log(index);
-    if (index > -1) {
-      this.#workout.splice(index, 1);
-    }
-    this._setLocalStorage();
-    this._getLocalStorage();
-    // this.#workout.forEach(work => {
-    //   this._renderWorkoutMaker(work);
-    // });
+  findIndex(arr, id) {
+    arr.findIndex(e => (e.id = id));
+  }
+  _removeWorkout(id) {
+    this.#workout.forEach((work, i) => {
+      if (work.id === id) this.#workout.splice(i, 1);
+      this.#marker[i].remove();
+      this.#marker.splice(i, 1);
 
-    // this.#workout.filter(e => e = id).pop
-    console.log(this.#workout);
+      this._setLocalStorage();
+      document.getElementById(id).remove();
+    });
   }
   reset() {
     localStorage.removeItem('workouts');
