@@ -169,15 +169,14 @@ class App {
     }
 
     this.#workout.push(workout);
-    console.log(this.#workout);
 
     this._renderWorkoutMaker(workout);
-    // this._rendreWorkout(workout);
+    this._rendreWorkout(workout);
 
     this._hideForm();
 
     this._setLocalStorage();
-    this._getLocalStorage();
+    // this._getLocalStorage();
   }
   _renderWorkoutMaker(workout) {
     L.marker(workout.coords)
@@ -239,7 +238,7 @@ class App {
             <span class="workout__unit">m</span>
           </div>
           `;
-    form.insertAdjacentHTML('afterend', '');
+
     form.insertAdjacentHTML('afterend', html);
   }
   _moveToPopup(e) {
@@ -255,23 +254,9 @@ class App {
         duration: 1,
       },
     });
-    // this._removeWorkout(workout);
 
     // workout.click();
   }
-  // _setLocalStorage() {
-  //   localStorage.setItem('workouts', JSON.stringify(this.#workout));
-  // }
-  // _getLocalStorage() {
-  //   const data = JSON.parse(localStorage.getItem('workouts'));
-
-  //   if (!data) return;
-
-  //   this.#workout = data;
-  //   this.#workout.forEach(work => {
-  //     this._rendreWorkout(work);
-  //   });
-  // }
   _setLocalStorage() {
     localStorage.setItem('workouts', JSON.stringify(this.#workout));
   }
@@ -280,29 +265,27 @@ class App {
 
     if (!data) return;
     this.#workout = data;
-    console.log(this.#workout);
-    //containerWorkouts.innerHTML = '';
     this.#workout.forEach(work => {
       this._rendreWorkout(work);
     });
   }
-  // _removeWorkout(workout) {
-  //   // this.#workout.indexOf(id)
-  //   console.log(this.#workout);
-  //   const index = this.#workout.indexOf(workout);
-  //   console.log(index);
-  //   if (index > -1) {
-  //     this.#workout.splice(index, 1);
-  //   }
-  //   this._setLocalStorage();
-  //   this._getLocalStorage();
-  //   // this.#workout.forEach(work => {
-  //   //   this._renderWorkoutMaker(work);
-  //   // });
+  _removeWorkout(workout) {
+    // this.#workout.indexOf(id)
+    console.log(this.#workout);
+    const index = this.#workout.indexOf(workout);
+    console.log(index);
+    if (index > -1) {
+      this.#workout.splice(index, 1);
+    }
+    this._setLocalStorage();
+    this._getLocalStorage();
+    // this.#workout.forEach(work => {
+    //   this._renderWorkoutMaker(work);
+    // });
 
-  //   // this.#workout.filter(e => e = id).pop
-  //   console.log(this.#workout);
-  // }
+    // this.#workout.filter(e => e = id).pop
+    console.log(this.#workout);
+  }
   reset() {
     localStorage.removeItem('workouts');
     location.reload();
